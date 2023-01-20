@@ -1,31 +1,41 @@
 package com.example.fileex.repository
 
-import android.os.Environment
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.ViewModelProvider
+import com.example.fileex.ui.main.mainfragment.MainViewModel
+import com.example.fileex.ui.main.mainfragment.MainViewModelFactory
+import kotlinx.coroutines.*
 import java.io.File
 
-class DirectoryRepository {
+class DirectoryRepository(activity: FragmentActivity) {
 
-    suspend fun getDirectories(filePath : String) : List<String>{
-        lateinit var directoriesFound : List<String>
+    private val viewModel = ViewModelProvider(activity, MainViewModelFactory(this))[MainViewModel::class.java]
 
-        withContext(Dispatchers.IO){
+    fun getDirectories(filePath : String){
+
+        CoroutineScope(Dispatchers.IO).launch {
             val subdirectoriesNames = File(filePath).list()?.asList()
-            val subdirectories : List<String>? = subdirectoriesNames?.map{
+            val subdirectories: List<String>? = subdirectoriesNames?.map {
                 "$filePath/$it"
             }
-            directoriesFound = subdirectories ?: ArrayList()
+            val directoriesFound = subdirectories ?: listOf()
+            viewModel.currentSubdirectories.postValue(directoriesFound)
         }
-
-        return directoriesFound
     }
 
-    fun getCurrentFiles(filePath : String) : List<String>{
-        val subdirectoriesNames = File(filePath).listFiles()?.asList()
-        val subdirectories : List<String>? = subdirectoriesNames?.map{
-            "$filePath/$it"
+/*
+    fun getFiles(filePath : String){
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val subdirectoriesNames = File(filePath).listFiles()
+            subdirectoriesNames?.filter { it.isFile }
+            val subdirectories: List<String>? = subdirectoriesNames?.asList()?.map {
+                "$filePath/$it"
+            }
+            val directoriesFound = subdirectories ?: listOf()
+
+            viewModel.currentSubdirectories.postValue(directoriesFound)
         }
-        return subdirectories ?: ArrayList()
     }
+    */
 }

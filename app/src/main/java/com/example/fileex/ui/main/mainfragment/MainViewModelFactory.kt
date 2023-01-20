@@ -1,4 +1,4 @@
-package com.example.fileex.ui.main
+package com.example.fileex.ui.main.mainfragment
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
